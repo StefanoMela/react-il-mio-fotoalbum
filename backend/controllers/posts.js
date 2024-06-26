@@ -45,7 +45,6 @@ const showSingle = async (req, res) => {
 }
 
 const create = async (req, res) => {
-    console.log("arrivata richiesta:", req.body);
     const { title, description, image, published, userId, categoryId } = req.body;
     const data = {
         title,
@@ -57,7 +56,6 @@ const create = async (req, res) => {
     };
     try {
         const post = await prisma.post.create({ data });
-        console.log('post correttamente creato');
         res.status(200).send({ post });
     } catch (err) {
         res.status(500).json({ error: err.message });
