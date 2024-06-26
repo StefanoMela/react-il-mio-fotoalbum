@@ -32,7 +32,7 @@ model Post {
   userId Int
   user  User   @relation(fields: [userId], references: [id])
   categoryId Int
-  category Category @relation(fields: [categoryId], references: [id])
+  categories Category[] @relation("PostToCategory")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -40,7 +40,7 @@ model Post {
 model Category {
   id    Int    @id @default(autoincrement())
   name  String
-  posts Post[]
+  posts Post[] @relation("PostToCategory")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

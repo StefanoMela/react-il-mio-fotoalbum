@@ -16,6 +16,8 @@ router.post('/create', uploader.single('image'), validator(bodyData), postContro
 
 router.get('/:id', postController.showSingle);
 
+router.put('/:id', uploader.single('image'), validator(bodyData), postController.update);
+
 router.delete('/:id', validator(paramID), postController.destroy);
 
 module.exports = router;

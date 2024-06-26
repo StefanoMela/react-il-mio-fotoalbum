@@ -11,7 +11,7 @@ const show = async (req, res) => {
                         name: true
                     }
                 },
-                category: {
+                categories: {
                     select: {
                         id: true,
                         name: true
@@ -30,14 +30,15 @@ const show = async (req, res) => {
 
 const showSingle = async (req, res) => {
     try {
+        const { id } = req.params;
         const post = await prisma.post.findUnique({
             where: {
-                id: req.params.id
+                id: parseInt(id)
             },
             include: {
                 user: true
             },
-            category: true
+            categories: true
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -45,13 +46,13 @@ const showSingle = async (req, res) => {
 }
 
 const create = async (req, res) => {
-    const { title, description, image, published, userId, categoryId } = req.body;
+    const { title, description, image, published, userId, categories } = req.body;
     const data = {
         title,
-        image,
         description,
+        image,
         published: req.body.published ? true : false,
-        category: { connect: { id: parseInt(categoryId) } },
+        categories: { connect: categories.map((id) => ({ id: parseInt(id) })) },
         user: { connect: { id: parseInt(userId) } },
     };
     try {
@@ -59,6 +60,34 @@ const create = async (req, res) => {
         res.status(200).send({ post });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+}
+
+const update = async (req, res) => {
+    console.log(req.body);
+    const {id, title, description, image, published, userId, categories } = req.body;
+    const data = {
+        id,
+        title,
+        image,
+        description,
+        published: req.body.published ? true : false,
+        categories: {
+            set:
+                categories ? categories.map(id => ({id})) : []
+        },
+        user: { connect: { id: parseInt(userId) } },
+    };
+    try {
+        const post = await prisma.post.update({
+            where: {
+                id: req.params.id
+            },
+            data
+        });
+        res.json({ post });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }
 
@@ -79,5 +108,6 @@ module.exports = {
     show,
     showSingle,
     create,
+    update,
     destroy
 }

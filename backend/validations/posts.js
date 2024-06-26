@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 // validazione campi del body ricevuto dal client
 
 const bodyData = {
-    userId: {
+    id: {
         in: ['params'],
         isInt: {
             options: { min: 1 },
@@ -55,7 +55,6 @@ const bodyData = {
         custom: {
             options: async (value) => {
                 const categoryId = parseInt(value);
-                console.log('Validating categoryId:', categoryId);
                 const category = await prisma.category.findUnique({
                     where: { id: categoryId }
                 });
