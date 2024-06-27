@@ -77,7 +77,6 @@ const create = async (req, res) => {
 }
 
 const update = async (req, res) => {
-    console.log(req.body);
     const { id, title, description, image, published, userId, categories } = req.body;
     const data = {
         id,

@@ -7,10 +7,11 @@ const validator = require('../middlewares/validator');
 const { bodyData } = require('../validations/posts')
 const { paramID } = require('../validations/params');
 
+const authMdw = require('../middlewares/authentication');
+
 const multer = require('multer');
 const uploader = multer({dest: "./public/imgs"});
 
-router.get('/', postController.show);
 
 router.post('/create', uploader.single('image'), validator(bodyData), postController.create);
 

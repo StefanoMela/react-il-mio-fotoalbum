@@ -1,13 +1,22 @@
 const express = require("express");
 
 const postsRouter = require("./routers/posts");
+const authRouter = require('./routers/auth')
+
+const postController = require("./controllers/posts");
 
 const app = express();
 require("dotenv").config();
 
-const port = 3000;
+const cors = require("cors")
+
+const port = process.env.PORT;
+
+app.use(cors());
 
 app.use(express.json());
+
+app.use('/auth', authRouter)
 
 app.use('/', postsRouter)
 
