@@ -1,18 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
-const { paramID } = require("./params");
 const prisma = new PrismaClient();
 
 // validazione campi del body ricevuto dal client
 
 const bodyData = {
-    id: {
-        in: ['params'],
-        isInt: {
-            options: { min: 1 },
-            bail: true
-        },
-        toInt: true
-    },
     title: {
         in: ['body'],
         notEmpty: {
@@ -45,21 +36,31 @@ const bodyData = {
             errorMessage: 'Published deve essere un booleano'
         }
     },
-    categoryId: {
+    categories: {
         in: ['body'],
-        isInt: {
-            errorMessage: "L'id della categoria deve essere un intero",
-            bail: true,
+        notEmpty: {
+            errorMessage: 'Le categorie sono obbligatorie.',
+            bail: true
+        },
+        isArray: {
+            errorMessage: "categories deve essere un array",
+            bail: true
         },
         toInt: true,
         custom: {
-            options: async (value) => {
-                const categoryId = parseInt(value);
-                const category = await prisma.category.findUnique({
-                    where: { id: categoryId }
+            options: async (ids) => {
+                if (ids.length === 0) {
+                    throw new Error(`Un post deve avere almeno una categoria`);
+                }
+                const notIntegerId = ids.find(id => isNaN(parseInt(id)));
+                if (notIntegerId) {
+                    throw new Error(`Uno o più ID non sono dei numeri interi.`);
+                }
+                const categories = await prisma.tag.findMany({
+                    where: { id: { in: ids } }
                 });
-                if (!category) {
-                    throw new Error(`Non esiste una Category con id ${categoryId}`)
+                if (categories.length !== ids.length) {
+                    throw new Error(`Uno o più categories specificati non esistono.`);
                 }
                 return true;
             }
