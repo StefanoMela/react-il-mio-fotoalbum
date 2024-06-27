@@ -36,9 +36,22 @@ const showSingle = async (req, res) => {
                 id: parseInt(id)
             },
             include: {
-                user: true
+                user: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                categories: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
             },
-            categories: true
+        });
+        res.json({
+            post
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -65,7 +78,7 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
     console.log(req.body);
-    const {id, title, description, image, published, userId, categories } = req.body;
+    const { id, title, description, image, published, userId, categories } = req.body;
     const data = {
         id,
         title,
@@ -74,7 +87,7 @@ const update = async (req, res) => {
         published: req.body.published ? true : false,
         categories: {
             set:
-                categories ? categories.map(id => ({id})) : []
+                categories ? categories.map(id => ({ id })) : []
         },
         user: { connect: { id: parseInt(userId) } },
     };
