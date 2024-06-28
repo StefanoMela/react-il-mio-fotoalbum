@@ -3,7 +3,32 @@ const prisma = new PrismaClient();
 
 const show = async (req, res) => {
     try {
+
+        let where = {};
+
+        const {content, page = 1, limit = 10} = req.query;
+        if(content){
+            where = {
+                title: {
+                    contains: content
+                }
+            }
+        }
+
+        // pagination
+
+        const offset = (page - 1) * limit;
+        const totalItems = await prisma.post.count({ where });
+        const totalPages = Math.ceil(totalItems / limit);
+
+        if(page > totalPages){
+            return res.status(404).json({message: 'Pagina non trovata'});
+        }
+
         const posts = await prisma.post.findMany({
+            where,
+            take: parseInt(limit),
+            skip: parseInt(offset),
             include: {
                 user: {
                     select: {
@@ -22,14 +47,13 @@ const show = async (req, res) => {
                 createdAt: 'desc'
             }
         });
-        res.json({ posts });
+        res.json({ posts, page, totalItems, totalPages });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 
 const showSingle = async (req, res) => {
-    console.log(req.params);
     try {
         const { id } = req.params;
         const post = await prisma.post.findUnique({

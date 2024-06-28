@@ -2,27 +2,29 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByb3ZhQHByb3ZhLmNvbSIsIm5hbWUiOiJCb2JieSIsImlhdCI6MTcxOTU2ODAyNCwiZXhwIjoxNzE5NTk2ODI0fQ.M3MOOFL_Djq2Rssl-EqULzbAj15cqmfE36yhDNVjOJA';
 import "/src/App.css";
 
 export default function PostList() {
   const defaultFormData = {
     title: "",
-    content: "",
+    description: "",
     image: "",
     categories: [],
     published: false,
-    userId: 1,
+    userId: 2,
   };
 
   const [formData, setFormData] = useState(defaultFormData);
   const [posts, setPosts] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchCategories = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}/categories`);
-      console.log(data);
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -43,6 +45,11 @@ export default function PostList() {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    fetchPosts(currentPage);
+  }, [currentPage]);
+
+
   const handleField = (name, value) => {
     setFormData((data) => ({ ...data, [name]: value }));
   };
@@ -53,9 +60,11 @@ export default function PostList() {
       if (editingIndex !== null) {
         await updatePost(editingIndex, formData);
       } else {
-        await axios.post(`${apiUrl}/posts`, formData, {
+        console.log(formData);
+        await axios.post(`${apiUrl}/posts/create`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`,
           },
         });
       }
@@ -103,6 +112,26 @@ export default function PostList() {
     const updatedPost = posts[index];
     await updatePost(updatedPost);
   };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        return nextPage;
+      });
+    }
+  };
+
+  const previousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => {
+        const prevPageNumber = prevPage - 1;
+        return prevPageNumber;
+      });
+    }
+  };
+
+
   return (
     <>
       <section className="form-section">
@@ -118,15 +147,15 @@ export default function PostList() {
               required
             />
           </div>
-          <div className="form-element content">
-            <label htmlFor="content">Contenuto</label>
+          <div className="form-element description">
+            <label htmlFor="description">Descrizione</label>
             <textarea
-              name="content"
-              id="content"
+              name="description"
+              id="description"
               cols="30"
               rows="10"
-              value={formData.content}
-              onChange={(e) => handleField("content", e.target.value)}
+              value={formData.description}
+              onChange={(e) => handleField("description", e.target.value)}
               required
             ></textarea>
           </div>
@@ -181,7 +210,7 @@ export default function PostList() {
                       <Link to={`/posts/${post.id}/`}>{post.title}</Link>
                     </h2>
                     <span>Contenuto:</span>
-                    <p>{post.content}</p>
+                    <p>{post.description}</p>
                     <span>Categorie:</span>
                     {post.categories &&
                       post.categories.map((category, index) => (
@@ -209,6 +238,25 @@ export default function PostList() {
           )}
         </div>
       </section>
+      <div className="pagination">
+                <button
+                  type="button"
+                  onClick={previousPage}
+                  disabled={currentPage <= 1}
+                >
+                  Precedente
+                </button>
+                <span>
+                  Pagina {currentPage} di {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={nextPage}
+                  disabled={currentPage >= totalPages}
+                >
+                  Prossima
+                </button>
+              </div>
     </>
   );
 }

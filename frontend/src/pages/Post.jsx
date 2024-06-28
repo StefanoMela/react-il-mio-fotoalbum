@@ -13,7 +13,6 @@ const Post = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      console.log('fetchPost', postId);
       try {
         const { data } = await axios.get(`${apiUrl}/posts/${postId}`);
         setPost(data.post);
