@@ -12,12 +12,13 @@ const authMdw = require('../middlewares/authentication');
 const multer = require('multer');
 const uploader = multer({dest: "./public/imgs"});
 
+router.get('/', postController.show);
 
-router.post('/create', uploader.single('image'), validator(bodyData), postController.create);
+router.post('/create', uploader.single('image'), authMdw.authProcedure, validator(bodyData), postController.create);
 
 router.get('/:id', postController.showSingle);
 
-router.put('/:id', uploader.single('image'), validator(bodyData), postController.update);
+router.put('/:id', uploader.single('image'), authMdw.isUserPost, validator(bodyData), postController.update);
 
 router.delete('/:id', validator(paramID), postController.destroy);
 

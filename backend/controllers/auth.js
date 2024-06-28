@@ -6,10 +6,6 @@ const deleteProfilePic = require("../utils/deleteProfilePic.js");
 const errorHandler = require("../middlewares/errorHandler.js");
 require('dotenv').config();
 
-
-const multer = require('multer');
-const uploader = multer({dest: "./public/profile_pics"});
-
 const register = async (req, res) => {
     try {
         // destrutturo i campi che mi arriveranno
@@ -34,7 +30,7 @@ const register = async (req, res) => {
         // creo il token univoco
         const token = generateToken({
             email: user.email,
-            name: user.name
+            name: user.name,
         });
 
         delete user.id;
@@ -74,7 +70,7 @@ const login = async (req, res) => {
         // genero il token
         const token = generateToken({
             email: user.email,
-            name: user.name
+            name: user.name,
         });
 
         delete user.id;

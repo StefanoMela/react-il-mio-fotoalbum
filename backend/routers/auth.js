@@ -5,7 +5,10 @@ const authController = require('../controllers/auth.js');
 const validator = require('../middlewares/validator');
 const { registerData, loginData } = require('../validations/users.js');
 
-router.post('/register', validator(registerData), authController.register)
-router.post('/login', validator(loginData), authController.login)
+const multer = require('multer');
+const uploader = multer({dest: "./public/profile_pics"});
+
+router.post('/register', uploader.single('image'), validator(registerData), authController.register)
+router.post('/login', uploader.single('image'), validator(loginData), authController.login)
 
 module.exports = router;

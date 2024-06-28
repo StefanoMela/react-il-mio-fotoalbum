@@ -2,8 +2,7 @@ const express = require("express");
 
 const postsRouter = require("./routers/posts");
 const authRouter = require('./routers/auth')
-
-const postController = require("./controllers/posts");
+const categoriesRouter = require('./routers/categories')
 
 const app = express();
 require("dotenv").config();
@@ -17,6 +16,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/auth', authRouter)
+
+app.use('/categories', categoriesRouter)
 
 app.use('/', postsRouter)
 

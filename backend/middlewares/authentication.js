@@ -6,12 +6,15 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const authProcedure = (req, res, next) => {
-    const { authorization } = req.header;
 
-    const token = authorization && authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    const token = authHeader && authHeader.split(" ")[1];
+
+    // const token = authorization && authorization.split(" ")[1];
 
     if (!token) {
-        throw new RestError("Token non valido", 403);
+        throw new RestError("Token non funziona", 403);
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, data)=> {
@@ -19,6 +22,7 @@ const authProcedure = (req, res, next) => {
             throw new RestError("Token non valido", 403);
         }
         req.user = data;
+        console.log(data);
         next();
     });
 }
