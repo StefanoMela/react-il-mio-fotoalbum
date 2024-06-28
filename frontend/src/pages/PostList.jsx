@@ -31,9 +31,8 @@ export default function PostList() {
 
   const fetchPosts = async () => {
     try {
-      const { data } = await axios.get(`${apiUrl}/`); // Modificata la richiesta API
-      console.log(data);
-      setPosts(data);
+      const { data } = await axios.get(`${apiUrl}/posts`); // Modificata la richiesta API
+      setPosts(data.posts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -153,7 +152,9 @@ export default function PostList() {
                     value={category.id}
                     checked={formData.categories.includes(category.id)}
                     onChange={(e) => {
-                      const newCategories = formData.categories.includes(category.id)
+                      const newCategories = formData.categories.includes(
+                        category.id
+                      )
                         ? formData.categories.filter((t) => t !== category.id)
                         : [...formData.categories, category.id];
                       handleField("categories", newCategories);
@@ -177,7 +178,7 @@ export default function PostList() {
                   <article key={`post${index}`} className="title-item">
                     <span>Titolo:</span>
                     <h2>
-                      <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                      <Link to={`/posts/${post.id}/`}>{post.title}</Link>
                     </h2>
                     <span>Contenuto:</span>
                     <p>{post.content}</p>

@@ -16,7 +16,7 @@ const Post = () => {
       console.log('fetchPost', postId);
       try {
         const { data } = await axios.get(`${apiUrl}/posts/${postId}`);
-        setPost(data);
+        setPost(data.post);
         setLoading(false);
       } catch (error) {
         setError('Error fetching post');
@@ -35,10 +35,9 @@ const Post = () => {
       <h1>{post.title}</h1>
       <p>{post.content}</p>
       {post.image && <img src={post.image} alt={post.title} />}
-      <p>Categoria: {post.category?.name}</p>
       <div>
-        {post.tags && post.tags.map(tag => (
-          <span key={tag.id}>{tag.name} </span>
+        {post.categories && post.categories.map(category => (
+          <span key={category.id}>{category.name} </span>
         ))}
       </div>
     </div>

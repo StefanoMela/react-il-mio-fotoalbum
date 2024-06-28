@@ -19,7 +19,7 @@ app.use('/auth', authRouter)
 
 app.use('/categories', categoriesRouter)
 
-app.use('/', postsRouter)
+app.use('/posts', postsRouter)
 
 app.listen(port, () => {
     console.log(`Server attivo su http://localhost:${port}`);

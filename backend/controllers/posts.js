@@ -29,6 +29,7 @@ const show = async (req, res) => {
 }
 
 const showSingle = async (req, res) => {
+    console.log(req.params);
     try {
         const { id } = req.params;
         const post = await prisma.post.findUnique({
