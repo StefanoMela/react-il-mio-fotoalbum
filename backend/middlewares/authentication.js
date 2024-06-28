@@ -16,12 +16,12 @@ const authProcedure = (req, res, next) => {
         throw new RestError("Token non funziona", 403);
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, data)=> {
-        if(err){
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
             throw new RestError("Token non valido", 403);
         }
-        req.user = data;
         console.log(data);
+        req.body.user = data;
         next();
     });
 }
@@ -38,7 +38,7 @@ const isUserPost = async (req, res, next) => {
             return res.status(404).json({ message: "Post non trovato" });
         }
 
-        if (post.userId !== userId) { 
+        if (post.userId !== userId) {
             return res.status(403).json({ message: "Puoi modificare solo i tuoi post" });
         }
 
@@ -49,9 +49,9 @@ const isUserPost = async (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-    const {username, password} = req.user;
+    const { username, password } = req.user;
     const user = users.find(u => u.username === username && u.password === password);
-    if(!user || !user.admin){
+    if (!user || !user.admin) {
         return res.status(403).send('Non sei autorizzato, devi essere admin');
     }
     next();

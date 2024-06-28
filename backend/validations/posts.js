@@ -66,13 +66,13 @@ const bodyData = {
             }
         }
     },
-    userId: {
+    "user.id": {
         in: ['body'],
+        toInt: true,
         isInt: {
             errorMessage: "L'id dell'utente deve essere un intero",
             bail: true,
         },
-        toInt: true,
         custom: {
             options: async (value) => {
                 const userId = parseInt(value);

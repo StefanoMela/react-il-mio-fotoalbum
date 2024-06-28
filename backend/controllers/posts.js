@@ -3,26 +3,22 @@ const prisma = new PrismaClient();
 
 const show = async (req, res) => {
     try {
-
         let where = {};
-
-        const {content, page = 1, limit = 10} = req.query;
-        if(content){
+        const { content, page = 1, limit = 10 } = req.query;
+        if (content) {
             where = {
                 title: {
                     contains: content
                 }
             }
         }
-
         // pagination
-
         const offset = (page - 1) * limit;
         const totalItems = await prisma.post.count({ where });
         const totalPages = Math.ceil(totalItems / limit);
 
-        if(page > totalPages){
-            return res.status(404).json({message: 'Pagina non trovata'});
+        if (page > totalPages) {
+            return res.status(404).json({ message: 'Pagina non trovata' });
         }
 
         const posts = await prisma.post.findMany({
@@ -84,14 +80,14 @@ const showSingle = async (req, res) => {
 }
 
 const create = async (req, res) => {
-    const { title, description, image, published, userId, categories } = req.body;
+    const { title, description, image, published, user, categories } = req.body;
     const data = {
         title,
         description,
         image,
         published: req.body.published ? true : false,
         categories: { connect: categories.map((id) => ({ id: parseInt(id) })) },
-        user: { connect: { id: parseInt(userId) } },
+        user: { connect: { id: parseInt(user.id) } },
     };
     try {
         const post = await prisma.post.create({ data });

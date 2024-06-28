@@ -49,12 +49,12 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-
         const {email, password} = req.body;
 
         // recupero user via email
         const user = await prisma.user.findUnique({
-            where: {email}
+            where: {email},
+            select: {id: true, name: true, email: true, password: true}
         });
         // errore nel caso in cui l'utente non sia trovato
         if(!user){
@@ -71,6 +71,7 @@ const login = async (req, res) => {
         const token = generateToken({
             email: user.email,
             name: user.name,
+            id: user.id
         });
 
         delete user.id;

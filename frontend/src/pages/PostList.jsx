@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByb3ZhQHByb3ZhLmNvbSIsIm5hbWUiOiJCb2JieSIsImlhdCI6MTcxOTU2ODAyNCwiZXhwIjoxNzE5NTk2ODI0fQ.M3MOOFL_Djq2Rssl-EqULzbAj15cqmfE36yhDNVjOJA';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InByb3ZhQHByb3ZhLmNvbSIsIm5hbWUiOiJCb2JieSIsImlkIjoyLCJpYXQiOjE3MTk1ODIzODQsImV4cCI6MTcxOTYxMTE4NH0.s0ZHERdhiojUbpw5iXeCTgYFoOrX3uT5wawP0-Aptp8';
 import "/src/App.css";
 
 export default function PostList() {
+
   const defaultFormData = {
     title: "",
     description: "",
     image: "",
     categories: [],
     published: false,
-    userId: 2,
   };
 
   const [formData, setFormData] = useState(defaultFormData);
@@ -21,6 +21,7 @@ export default function PostList() {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [user, setUser] = useState(null);
 
   const fetchCategories = async () => {
     try {
@@ -35,6 +36,9 @@ export default function PostList() {
     try {
       const { data } = await axios.get(`${apiUrl}/posts`); // Modificata la richiesta API
       setPosts(data.posts);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
+      setUser(data.user);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -42,7 +46,6 @@ export default function PostList() {
 
   useEffect(() => {
     fetchCategories();
-    fetchPosts();
   }, []);
 
   useEffect(() => {
@@ -219,6 +222,7 @@ export default function PostList() {
                     <span>Immagine:</span>
                     <img src={post.image} alt={post.title} />
                     <br />
+                    <div className="author">Autore: {post.user.name}</div>
                     <button
                       onClick={() => startEditing(post.id)}
                       className="edit-button"
